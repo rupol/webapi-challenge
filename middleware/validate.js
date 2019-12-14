@@ -34,6 +34,24 @@ function validateProject() {
   };
 }
 
+function validateActionId() {
+  return (req, res, next) => {
+    actions
+      .get(req.params.id)
+      .then(action => {
+        if (action) {
+          req.action = action;
+          next();
+        } else {
+          res.status(404).json({ message: "Action not found" });
+        }
+      })
+      .catch(error => {
+        next(error);
+      });
+  };
+}
+
 function validateAction() {
   return (req, res, next) => {
     if (!req.body) {
@@ -49,4 +67,9 @@ function validateAction() {
   };
 }
 
-module.exports = { validateProjectId, validateProject, validateAction };
+module.exports = {
+  validateProjectId,
+  validateProject,
+  validateActionId,
+  validateAction
+};
