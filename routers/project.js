@@ -1,8 +1,10 @@
 const express = require("express");
 const projects = require("../data/helpers/projectModel");
+const actions = require("../data/helpers/actionModel");
 const {
   validateProjectId,
-  validateProject
+  validateProject,
+  validateAction
 } = require("../middleware/validate");
 const router = express.Router();
 
@@ -55,5 +57,46 @@ router.put("/:id", validateProjectId(), validateProject(), (req, res, next) => {
       next(error);
     });
 });
+
+router.get("/:id/actions", validateProjectId(), (req, res, next) => {
+  projects
+    .getProjectActions(req.project.id)
+    .then(actions => {
+      if (actions && actions.length) {
+        res.status(200).json(actions);
+      } else {
+        res.status(200).json({
+          message:
+            "The project with the specified ID does not currently have any actions."
+        });
+      }
+    })
+    .catch(error => {
+      next(error);
+    });
+});
+
+router.post(
+  "/:id/actions",
+  validateProjectId(),
+  validateAction(),
+  (req, res, next) => {
+    const newAction = {
+      project_id: req.project.id,
+      description: req.body.description,
+      notes: req.body.notes,
+      completed: req.body.completed || false
+    };
+
+    actions
+      .insert(newAction)
+      .then(action => {
+        res.status(201).json(action);
+      })
+      .catch(error => {
+        next(error);
+      });
+  }
+);
 
 module.exports = router;
