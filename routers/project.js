@@ -32,4 +32,28 @@ router.post("/", validateProject(), (req, res, next) => {
     });
 });
 
+router.delete("/:id", validateProjectId(), (req, res, next) => {
+  projects
+    .remove(req.project.id)
+    .then(count => {
+      if (count > 0) {
+        res.status(200).json({ message: "The project has been deleted" });
+      }
+    })
+    .catch(error => {
+      next(error);
+    });
+});
+
+router.put("/:id", validateProjectId(), validateProject(), (req, res, next) => {
+  projects
+    .update(req.project.id, req.body)
+    .then(projectObj => {
+      res.status(200).json(projectObj);
+    })
+    .catch(error => {
+      next(error);
+    });
+});
+
 module.exports = router;
