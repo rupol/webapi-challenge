@@ -12,3 +12,16 @@ I need this code, just don't know where, perhaps should make some middleware, do
 
 Go code!
 */
+
+const express = require("express");
+
+const server = require("./server");
+
+server.use(express.json());
+
+const host = "localhost";
+const port = 4000;
+
+server.listen(port, host, () => {
+  console.log(`\n*** Server Running on http://${host}:${port} ***\n`);
+});
